@@ -1,7 +1,7 @@
 {
-  "name": "K-DPPP | Kuesioner Distres Psikologis Perawat Paliatif",
+  "name": "K-DPPP | Kuesioner Distres Psikologis Pasien Paliatif",
   "short_name": "K-DPPP",
-  "description": "Kuesioner untuk mengukur tingkat distres psikologis pada perawat paliatif",
+  "description": "Kuesioner untuk mengukur tingkat distres psikologis pada pasien paliatif",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

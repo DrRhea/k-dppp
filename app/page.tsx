@@ -42,10 +42,10 @@ export default function Home() {
               <h1 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl lg:text-6xl">
                 <span className="text-primary">Kuesioner Distres Psikologis</span>
                 <br />
-                <span className="text-foreground">Perawat Paliatif</span>
+                <span className="text-foreground">Pasien Paliatif</span>
               </h1>
               <p className="mt-6 text-lg text-muted-foreground md:text-xl">
-                Instrumen tervalidasi untuk mengukur tingkat distres psikologis pada perawat paliatif
+                Instrumen tervalidasi untuk mengukur tingkat distres psikologis pada pasien paliatif
               </p>
               <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:justify-center">
                 <Button asChild size="lg" className="text-base font-semibold">
@@ -71,7 +71,7 @@ export default function Home() {
                 Fitur Utama
               </h2>
               <p className="mt-4 text-lg text-muted-foreground">
-                Solusi komprehensif untuk assessment kesehatan mental perawat paliatif
+                Solusi komprehensif untuk assessment kesehatan mental pasien paliatif
               </p>
             </div>
             <div className="mx-auto mt-16 max-w-5xl grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
@@ -84,7 +84,7 @@ export default function Home() {
                 </CardHeader>
                 <CardContent>
                   <CardDescription className="text-base">
-                    20 pertanyaan yang telah tervalidasi untuk mengukur distres psikologis pada perawat paliatif
+                    20 pertanyaan yang telah tervalidasi untuk mengukur distres psikologis pada pasien paliatif
                   </CardDescription>
                 </CardContent>
               </Card>

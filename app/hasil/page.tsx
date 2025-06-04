@@ -67,7 +67,7 @@ export default function HasilPage() {
   const handleShare = async () => {
     if (!score) return;
     
-    const shareText = `Hasil Kuesioner Distres Psikologis Perawat Paliatif (K-DPPP)\n\nSkor: ${score}/80\nKategori: ${category}\n\nRekomendasi: ${recommendation}`;
+    const shareText = `Hasil Kuesioner Distres Psikologis Pasien Paliatif (K-DPPP)\n\nSkor: ${score}/80\nKategori: ${category}\n\nRekomendasi: ${recommendation}`;
     
     if (navigator.share) {
       try {
@@ -121,7 +121,7 @@ export default function HasilPage() {
             <CardHeader className="text-center">
               <CardTitle className="text-2xl">Hasil Penilaian</CardTitle>
               <CardDescription>
-                Kuesioner Distres Psikologis Perawat Paliatif (K-DPPP)
+                Kuesioner Distres Psikologis Pasien Paliatif (K-DPPP)
               </CardDescription>
             </CardHeader>
             

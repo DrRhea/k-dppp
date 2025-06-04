@@ -5,111 +5,111 @@ export interface Question {
 }
 
 export const questions: Question[] = [
-  // Dimensi Emosi (1-5)
+  // A. Dimensi Emosi (1-5)
   {
     id: 1,
-    text: 'Saya merasa sedih ketika melihat pasien yang menderita.',
+    text: 'Saya merasa cemas atau khawatir secara terus-menerus',
     dimension: 'emosi',
   },
   {
     id: 2,
-    text: 'Saya merasa cemas ketika menghadapi pasien dalam kondisi terminal.',
+    text: 'Saya merasa sedih atau murung tanpa sebab yang jelas',
     dimension: 'emosi',
   },
   {
     id: 3,
-    text: 'Saya merasa takut ketika harus memberitahu keluarga tentang kondisi pasien yang memburuk.',
+    text: 'Saya mudah marah atau tersinggung',
     dimension: 'emosi',
   },
   {
     id: 4,
-    text: 'Saya merasa marah ketika melihat sistem yang tidak mendukung pasien paliatif.',
+    text: 'Saya merasa takut menghadapi kondisi saya',
     dimension: 'emosi',
   },
   {
     id: 5,
-    text: 'Saya merasa putus asa ketika tidak dapat mengurangi penderitaan pasien.',
+    text: 'Saya menangis tanpa alasan yang jelas',
     dimension: 'emosi',
   },
 
-  // Dimensi Sosial dan Relasional (6-10)
+  // B. Dimensi Sosial dan Relasional (6-10)
   {
     id: 6,
-    text: 'Saya merasa terisolasi dari rekan kerja karena beban kerja di unit paliatif.',
+    text: 'Saya merasa sendirian atau kesepian',
     dimension: 'sosial',
   },
   {
     id: 7,
-    text: 'Saya mengalami kesulitan berkomunikasi dengan keluarga pasien tentang prognosis.',
+    text: 'Saya merasa kurang mendapat dukungan dari keluarga atau orang dekat',
     dimension: 'sosial',
   },
   {
     id: 8,
-    text: 'Saya merasa tidak mendapat dukungan yang cukup dari atasan.',
+    text: 'Saya merasa tidak bisa berbicara jujur tentang perasaan saya kepada orang lain',
     dimension: 'sosial',
   },
   {
     id: 9,
-    text: 'Saya mengalami konflik dengan tim medis lain terkait perawatan pasien.',
+    text: 'Saya merasa menjadi beban bagi orang lain',
     dimension: 'sosial',
   },
   {
     id: 10,
-    text: 'Saya merasa hubungan dengan keluarga di rumah terganggu karena pekerjaan.',
+    text: 'Saya merasa tidak dimengerti oleh tenaga kesehatan',
     dimension: 'sosial',
   },
 
-  // Dimensi Spiritual dan Makna Hidup (11-15)
+  // C. Dimensi Spiritual dan Makna Hidup (11-15)
   {
     id: 11,
-    text: 'Saya mempertanyakan makna hidup ketika menghadapi kematian pasien.',
+    text: 'Saya merasa hidup saya tidak berarti lagi',
     dimension: 'spiritual',
   },
   {
     id: 12,
-    text: 'Saya merasa kehilangan tujuan dalam memberikan perawatan paliatif.',
+    text: 'Saya merasa kehilangan harapan akan masa depan',
     dimension: 'spiritual',
   },
   {
     id: 13,
-    text: 'Saya merasa spiritual/keyakinan saya tergoyahkan ketika melihat penderitaan pasien.',
+    text: 'Saya mempertanyakan keyakinan saya atau iman saya',
     dimension: 'spiritual',
   },
   {
     id: 14,
-    text: 'Saya merasa tidak mampu memberikan dukungan spiritual yang dibutuhkan pasien.',
+    text: 'Saya merasa bersalah atas hal-hal yang telah terjadi',
     dimension: 'spiritual',
   },
   {
     id: 15,
-    text: 'Saya merasa pekerjaan ini bertentangan dengan nilai-nilai hidup saya.',
+    text: 'Saya tidak tahu harus bagaimana menghadapi kematian',
     dimension: 'spiritual',
   },
 
-  // Dimensi Gejala Fisik yang Mempengaruhi Psikologis (16-20)
+  // D. Dimensi Gejala Fisik yang Mempengaruhi Psikologis (16-20)
   {
     id: 16,
-    text: 'Saya mengalami gangguan tidur karena memikirkan kondisi pasien.',
+    text: 'Saya tidak bisa tidur dengan nyenyak',
     dimension: 'fisik',
   },
   {
     id: 17,
-    text: 'Saya mengalami sakit kepala setelah shift di unit paliatif.',
+    text: 'Saya kehilangan nafsu makan karena pikiran saya',
     dimension: 'fisik',
   },
   {
     id: 18,
-    text: 'Saya merasa kelelahan yang berlebihan setelah merawat pasien paliatif.',
+    text: 'Saya sering merasa kelelahan secara mental',
     dimension: 'fisik',
   },
   {
     id: 19,
-    text: 'Saya mengalami gangguan nafsu makan karena stress di tempat kerja.',
+    text: 'Saya tidak mampu menikmati hal-hal yang biasanya saya sukai',
     dimension: 'fisik',
   },
   {
     id: 20,
-    text: 'Saya mengalami gejala fisik lain (seperti jantung berdebar, berkeringat) ketika menghadapi situasi sulit.',
+    text: 'Saya merasa tidak punya kendali atas tubuh saya',
     dimension: 'fisik',
   },
 ];

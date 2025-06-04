@@ -5,8 +5,8 @@ import './globals.css';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'K-DPPP | Kuesioner Distres Psikologis Perawat Paliatif',
-  description: 'Kuesioner untuk mengukur tingkat distres psikologis pada perawat paliatif',
+  title: 'K-DPPP | Kuesioner Distres Psikologis Pasien Paliatif',
+  description: 'Kuesioner untuk mengukur tingkat distres psikologis pada pasien paliatif',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
@@ -62,12 +62,12 @@ export default function RootLayout({
         <meta name="twitter:card" content="summary" />
         <meta name="twitter:url" content="https://k-dppp.vercel.app" />
         <meta name="twitter:title" content="K-DPPP" />
-        <meta name="twitter:description" content="Kuesioner Distres Psikologis Perawat Paliatif" />
+        <meta name="twitter:description" content="Kuesioner Distres Psikologis Pasien Paliatif" />
         <meta name="twitter:image" content="https://k-dppp.vercel.app/logo.png" />
         <meta name="twitter:creator" content="@kdppp" />
         <meta property="og:type" content="website" />
         <meta property="og:title" content="K-DPPP" />
-        <meta property="og:description" content="Kuesioner Distres Psikologis Perawat Paliatif" />
+        <meta property="og:description" content="Kuesioner Distres Psikologis Pasien Paliatif" />
         <meta property="og:site_name" content="K-DPPP" />
         <meta property="og:url" content="https://k-dppp.vercel.app" />
         <meta property="og:image" content="https://k-dppp.vercel.app/logo.png" />

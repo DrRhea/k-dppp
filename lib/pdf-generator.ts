@@ -20,7 +20,7 @@ export async function generatePdf(score: number, category: string, recommendatio
   doc.text('K-DPPP', 105, 20, { align: 'center' });
   
   doc.setFontSize(12);
-  doc.text('Kuesioner Distres Psikologis Perawat Paliatif', 105, 27, { align: 'center' });
+  doc.text('Kuesioner Distres Psikologis Pasien Paliatif', 105, 27, { align: 'center' });
   
   // Add date
   doc.setFontSize(10);

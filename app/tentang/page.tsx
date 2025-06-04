@@ -39,7 +39,7 @@ export default function TentangPage() {
               </div>
               <CardTitle className="text-3xl font-bold">K-DPPP</CardTitle>
               <CardDescription className="text-lg">
-                Kuesioner Distres Psikologis Perawat Paliatif
+                Kuesioner Distres Psikologis Pasien Paliatif
               </CardDescription>
             </CardHeader>
           </Card>
@@ -94,13 +94,13 @@ export default function TentangPage() {
             <CardContent className="space-y-4">
               <div className="text-center">
                 <h3 className="text-xl font-semibold">Ns. Sulatri, M.Kep., Sp. Jiwa</h3>
-                <p className="text-muted-foreground">Dosen Keperawatan Jiwa</p>
+                <p className="text-muted-foreground">Dosen Keperawatan Paliatif</p>
                 <p className="text-muted-foreground">Poltekkes Kemenkes Tanjungkarang</p>
               </div>
               <Separator />
               <div className="text-center text-sm text-muted-foreground">
                 <p>Instrumen ini dikembangkan sebagai bagian dari penelitian untuk meningkatkan 
-                kesejahteraan mental perawat paliatif di Indonesia.</p>
+                kesejahteraan mental pasien paliatif di Indonesia.</p>
               </div>
             </CardContent>
           </Card>

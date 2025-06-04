@@ -31,7 +31,7 @@ export function getRecommendation(category: string): string {
       return 'Anjurkan konseling ringan oleh perawat atau tenaga kesehatan terlatih. Pertimbangkan untuk berbicara dengan rekan kerja atau supervisor tentang beban kerja. Praktikkan teknik relaksasi dan manajemen stres secara lebih teratur.';
       
     case 'Distres sedang':
-      return 'Lakukan rujukan ke psikolog/pelayanan psikososial rumah sakit. Evaluasi beban kerja dan pertimbangkan untuk menyesuaikan jadwal atau tanggung jawab sementara. Bergabunglah dengan kelompok dukungan untuk perawat paliatif.';
+      return 'Lakukan rujukan ke psikolog/pelayanan psikososial rumah sakit. Evaluasi beban kerja dan pertimbangkan untuk menyesuaikan jadwal atau tanggung jawab sementara. Bergabunglah dengan kelompok dukungan untuk pasien paliatif.';
       
     case 'Distres berat':
       return 'Intervensi segera oleh tim multidisiplin (psikolog, psikiater, rohaniawan, dan paliatif care team). Pertimbangkan cuti kerja jika memungkinkan. Dapatkan dukungan profesional secara intensif dan rutin.';
