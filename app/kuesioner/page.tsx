@@ -1,3 +1,4 @@
+// app/kuesioner/page.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -7,38 +8,55 @@ import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { QuestionItem } from '@/components/question-item';
 import { questions } from '@/lib/questions';
-import { useToast } from '@/hooks/use-toast';
-import Header from '@/components/header';
+import Link from 'next/link';
+import Image from 'next/image';
+
+// Simple Header component inline
+function SimpleHeader() {
+  return (
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur">
+      <div className="container flex h-16 items-center">
+        <Link href="/" className="flex items-center gap-2">
+          <Image src="/logo.png" alt="Logo" width={40} height={40} className="h-8 w-auto" />
+          <span className="text-lg font-bold text-primary">Kuesioner</span>
+        </Link>
+      </div>
+    </header>
+  );
+}
 
 export default function KuesionerPage() {
   const router = useRouter();
-  const { toast } = useToast();
   const [currentSection, setCurrentSection] = useState(0);
   const [answers, setAnswers] = useState<number[]>(Array(questions.length).fill(-1));
   const [progress, setProgress] = useState(0);
 
   // Check if there are saved answers in localStorage
   useEffect(() => {
-    const savedAnswers = localStorage.getItem('k-dppp-answers');
-    if (savedAnswers) {
-      try {
-        const parsedAnswers = JSON.parse(savedAnswers);
-        if (Array.isArray(parsedAnswers) && parsedAnswers.length === questions.length) {
-          setAnswers(parsedAnswers);
-          
-          // Calculate progress
-          const answered = parsedAnswers.filter((a) => a !== -1).length;
-          setProgress(Math.round((answered / questions.length) * 100));
+    if (typeof window !== 'undefined') {
+      const savedAnswers = localStorage.getItem('k-dppp-answers');
+      if (savedAnswers) {
+        try {
+          const parsedAnswers = JSON.parse(savedAnswers);
+          if (Array.isArray(parsedAnswers) && parsedAnswers.length === questions.length) {
+            setAnswers(parsedAnswers);
+            
+            // Calculate progress
+            const answered = parsedAnswers.filter((a: number) => a !== -1).length;
+            setProgress(Math.round((answered / questions.length) * 100));
+          }
+        } catch (error) {
+          console.error('Error parsing saved answers:', error);
         }
-      } catch (error) {
-        console.error('Error parsing saved answers:', error);
       }
     }
   }, []);
 
   // Save answers to localStorage whenever they change
   useEffect(() => {
-    localStorage.setItem('k-dppp-answers', JSON.stringify(answers));
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('k-dppp-answers', JSON.stringify(answers));
+    }
     
     // Calculate progress
     const answered = answers.filter((a) => a !== -1).length;
@@ -59,40 +77,42 @@ export default function KuesionerPage() {
     );
 
     if (!allAnswered) {
-      toast({
-        title: 'Mohon lengkapi semua pertanyaan',
-        description: 'Silakan jawab semua pertanyaan sebelum melanjutkan',
-        variant: 'destructive',
-      });
+      alert('Mohon lengkapi semua pertanyaan sebelum melanjutkan');
       return;
     }
 
     if (currentSection < 3) {
       setCurrentSection(currentSection + 1);
-      window.scrollTo(0, 0);
+      if (typeof window !== 'undefined') {
+        window.scrollTo(0, 0);
+      }
     } else {
       // Calculate total score
       const totalScore = answers.reduce((sum, value) => sum + (value === -1 ? 0 : value), 0);
       
       // Save score to localStorage
-      localStorage.setItem('k-dppp-score', totalScore.toString());
-      
-      // Redirect to results page
-      router.push('/hasil');
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('k-dppp-score', totalScore.toString());
+        router.push('/hasil');
+      }
     }
   };
 
   const handlePrevious = () => {
     if (currentSection > 0) {
       setCurrentSection(currentSection - 1);
-      window.scrollTo(0, 0);
+      if (typeof window !== 'undefined') {
+        window.scrollTo(0, 0);
+      }
     }
   };
 
   const handleReset = () => {
-    if (confirm('Apakah Anda yakin ingin mengulang kuesioner? Semua jawaban akan dihapus.')) {
+    if (typeof window !== 'undefined' && window.confirm('Apakah Anda yakin ingin mengulang kuesioner? Semua jawaban akan dihapus.')) {
       setAnswers(Array(questions.length).fill(-1));
       setCurrentSection(0);
+      localStorage.removeItem('k-dppp-answers');
+      localStorage.removeItem('k-dppp-score');
       window.scrollTo(0, 0);
     }
   };
@@ -119,7 +139,7 @@ export default function KuesionerPage() {
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      <Header title="Kuesioner" showBack />
+      <SimpleHeader />
       
       <main className="flex-1 container py-6">
         <div className="mx-auto max-w-3xl">
@@ -136,7 +156,7 @@ export default function KuesionerPage() {
           <Card className="p-6">
             <h1 className="text-xl font-bold mb-2">{sectionTitles[currentSection]}</h1>
             <p className="text-sm text-muted-foreground mb-6">
-              Bacalah setiap pernyataan berikut dengan saksama. Pilih angka yang paling sesuai dengan kondisi Anda selama 7 hari terakhir. Gunakan skala 0 sampai 4 untuk menilai setiap pernyataan.
+              Bacalah setiap pernyataan berikut dengan saksama. Pilih angka yang paling sesuai dengan kondisi Anda selama 7 hari terakhir. Gunakan skala 1 sampai 4 untuk menilai setiap pernyataan.
             </p>
 
             <div className="space-y-6">

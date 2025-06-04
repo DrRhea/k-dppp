@@ -1,13 +1,27 @@
-import Header from '@/components/header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
+import Link from 'next/link';
+
+// Simple Header component inline
+function SimpleHeader() {
+  return (
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur">
+      <div className="container flex h-16 items-center">
+        <Link href="/" className="flex items-center gap-2">
+          <Image src="/logo.png" alt="Logo" width={40} height={40} className="h-8 w-auto" />
+          <span className="text-lg font-bold text-primary">Tentang K-DPPP</span>
+        </Link>
+      </div>
+    </header>
+  );
+}
 
 export default function TentangPage() {
   return (
     <div className="min-h-screen bg-background">
-      <Header title="Tentang K-DPPP" showBack />
+      <SimpleHeader />
       
       <main className="container px-4 py-8">
         <div className="mx-auto max-w-4xl space-y-8">
@@ -55,15 +69,17 @@ export default function TentangPage() {
                 <div>
                   <h4 className="font-semibold mb-2">Kategori Hasil:</h4>
                   <div className="space-y-2">
-                    <Badge variant="outline" className="text-green-600 border-green-600">
-                      Rendah (20-40)
-                    </Badge>
-                    <Badge variant="outline" className="text-yellow-600 border-yellow-600">
-                      Sedang (41-60)
-                    </Badge>
-                    <Badge variant="outline" className="text-red-600 border-red-600">
-                      Tinggi (61-80)
-                    </Badge>
+                    <div className="flex flex-wrap gap-2">
+                      <Badge variant="outline" className="text-green-600 border-green-600 bg-green-50">
+                        Rendah (20-40)
+                      </Badge>
+                      <Badge variant="outline" className="text-yellow-600 border-yellow-600 bg-yellow-50">
+                        Sedang (41-60)
+                      </Badge>
+                      <Badge variant="outline" className="text-red-600 border-red-600 bg-red-50">
+                        Tinggi (61-80)
+                      </Badge>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -102,7 +118,6 @@ export default function TentangPage() {
                   <li>Pilih jawaban yang paling sesuai dengan kondisi Anda</li>
                   <li>Pastikan semua pertanyaan telah dijawab</li>
                   <li>Lihat hasil dan interpretasi pada halaman hasil</li>
-                  <li>Unduh laporan PDF jika diperlukan</li>
                 </ol>
               </div>
             </CardContent>
