@@ -153,7 +153,7 @@ export default function KuesionerPage() {
             <div className="flex justify-between mt-8">
               <div>
                 {currentSection > 0 && (
-                  <Button variant="outline\" onClick={handlePrevious}>
+                  <Button variant="outline" onClick={handlePrevious}>
                     Sebelumnya
                   </Button>
                 )}
