@@ -3,201 +3,332 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
-import { FileText, RotateCcw, Share2 } from 'lucide-react';
-import { interpretScore, getRecommendation } from '@/lib/scoring';
-import { generatePdf } from '@/lib/pdf-generator';
-import Header from '@/components/header';
-import { useToast } from '@/hooks/use-toast';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { RotateCcw, AlertCircle, CheckCircle, XCircle, FileDown } from 'lucide-react';
+import Link from 'next/link';
+import Image from 'next/image';
+import jsPDF from 'jspdf';
+
+// Updated scoring functions for 0-4 scale (max 80 points)
+function interpretScore(score: number): string {
+  if (score >= 0 && score <= 26) return 'Rendah';
+  if (score >= 27 && score <= 53) return 'Sedang';
+  if (score >= 54 && score <= 80) return 'Tinggi';
+  return 'Tidak Valid';
+}
+
+function getRecommendation(category: string): string {
+  switch (category.toLowerCase()) {
+    case 'rendah':
+      return 'Tingkat distres psikologis Anda berada dalam kategori rendah. Ini menunjukkan bahwa Anda memiliki kemampuan coping yang baik dalam menghadapi stres kerja. Tetap pertahankan keseimbangan hidup-kerja dan lanjutkan strategi pengelolaan stres yang sudah Anda lakukan.';
+    case 'sedang':
+      return 'Tingkat distres psikologis Anda berada dalam kategori sedang. Disarankan untuk lebih memperhatikan kesehatan mental Anda. Pertimbangkan untuk melakukan aktivitas relaksasi, olahraga teratur, dan mencari dukungan dari rekan kerja atau keluarga. Jika diperlukan, konsultasikan dengan konselor atau psikolog.';
+    case 'tinggi':
+      return 'Tingkat distres psikologis Anda berada dalam kategori tinggi. Sangat disarankan untuk segera mencari bantuan profesional dari psikolog atau psikiater. Lakukan evaluasi beban kerja, pertimbangkan cuti jika memungkinkan, dan pastikan Anda mendapatkan dukungan yang memadai dari supervisor dan rekan kerja.';
+    default:
+      return 'Hasil tidak dapat diinterpretasikan. Silakan ulangi pengisian kuesioner.';
+  }
+}
+
+// Simple Header component inline
+function SimpleHeader() {
+  return (
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur">
+      <div className="container flex h-16 items-center">
+        <Link href="/kuesioner" className="flex items-center gap-2">
+          <Image src="/logo.png" alt="Logo" width={40} height={40} className="h-8 w-auto" />
+          <span className="text-lg font-bold text-primary">Hasil Assessment</span>
+        </Link>
+      </div>
+    </header>
+  );
+}
+
+interface BiodataData {
+  nama: string;
+  umur: string;
+  tanggalLahir: string;
+}
 
 export default function HasilPage() {
   const router = useRouter();
-  const { toast } = useToast();
   const [score, setScore] = useState<number | null>(null);
   const [category, setCategory] = useState('');
   const [recommendation, setRecommendation] = useState('');
+  const [biodataData, setBiodataData] = useState<BiodataData | null>(null);
+  const [loading, setLoading] = useState(true);
   
   useEffect(() => {
-    const savedScore = localStorage.getItem('k-dppp-score');
-    
-    if (!savedScore) {
-      // Redirect to kuesioner if no score is found
-      router.push('/kuesioner');
-      return;
+    if (typeof window !== 'undefined') {
+      const savedScore = localStorage.getItem('k-dppp-score');
+      const savedBiodata = localStorage.getItem('k-dppp-biodata');
+      
+      if (!savedScore) {
+        router.push('/kuesioner');
+        return;
+      }
+      
+      const parsedScore = parseInt(savedScore, 10);
+      setScore(parsedScore);
+      
+      const interpretedCategory = interpretScore(parsedScore);
+      setCategory(interpretedCategory);
+      
+      const recommendationText = getRecommendation(interpretedCategory);
+      setRecommendation(recommendationText);
+
+      // Load biodata
+      if (savedBiodata) {
+        try {
+          const parsedBiodata = JSON.parse(savedBiodata);
+          setBiodataData(parsedBiodata);
+        } catch (error) {
+          console.error('Error parsing biodata:', error);
+        }
+      }
+      
+      setLoading(false);
     }
-    
-    const parsedScore = parseInt(savedScore, 10);
-    setScore(parsedScore);
-    
-    const interpretedCategory = interpretScore(parsedScore);
-    setCategory(interpretedCategory);
-    
-    const recommendationText = getRecommendation(interpretedCategory);
-    setRecommendation(recommendationText);
   }, [router]);
 
   const handleReset = () => {
-    if (confirm('Apakah Anda yakin ingin mengulang kuesioner? Semua jawaban akan dihapus.')) {
-      localStorage.removeItem('k-dppp-answers');
+    if (typeof window !== 'undefined' && window.confirm('Apakah Anda yakin ingin mengulang kuesioner? Semua data akan dihapus.')) {
       localStorage.removeItem('k-dppp-score');
+      localStorage.removeItem('k-dppp-answers');
+      localStorage.removeItem('k-dppp-biodata');
       router.push('/kuesioner');
     }
   };
 
-  const handleExportPdf = async () => {
-    if (score === null) return;
+  const handleExportPDF = () => {
+    if (!score || !biodataData) return;
+
+    const doc = new jsPDF();
     
-    try {
-      await generatePdf(score, category, recommendation);
-      toast({
-        title: 'PDF berhasil dibuat',
-        description: 'Hasil kuesioner telah diunduh sebagai file PDF',
-      });
-    } catch (error) {
-      console.error('Error generating PDF:', error);
-      toast({
-        title: 'Gagal membuat PDF',
-        description: 'Terjadi kesalahan saat membuat file PDF',
-        variant: 'destructive',
-      });
+    // Header
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.text('HASIL KUESIONER DISTRES PSIKOLOGIS', 20, 20);
+    doc.text('PERAWAT PALIATIF (K-DPPP)', 20, 30);
+    
+    // Tanggal
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    const currentDate = new Date().toLocaleDateString('id-ID', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+    doc.text(`Tanggal Pengisian: ${currentDate}`, 20, 45);
+    
+    // Data Responden
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.text('DATA RESPONDEN', 20, 60);
+    
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Nama: ${biodataData.nama}`, 20, 70);
+    doc.text(`Umur: ${biodataData.umur} tahun`, 20, 80);
+    doc.text(`Tanggal Lahir: ${new Date(biodataData.tanggalLahir).toLocaleDateString('id-ID')}`, 20, 90);
+    
+    // Hasil Penilaian
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.text('HASIL PENILAIAN', 20, 110);
+    
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Skor Total: ${score}/80`, 20, 120);
+    doc.text(`Kategori: Distres ${category}`, 20, 130);
+    
+    // Interpretasi
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.text('INTERPRETASI', 20, 150);
+    
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    
+    // Split recommendation text into multiple lines
+    const splitText = doc.splitTextToSize(recommendation, 170);
+    doc.text(splitText, 20, 160);
+    
+    // Calculate Y position for next section
+    const textHeight = splitText.length * 5;
+    let yPos = 160 + textHeight + 20;
+    
+    // Catatan
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.text('CATATAN', 20, yPos);
+    
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    const catatanText = 'Hasil ini hanya sebagai indikator awal dan tidak dapat menggantikan diagnosis profesional. Jika Anda merasa mengalami distres yang signifikan, disarankan untuk berkonsultasi dengan profesional kesehatan mental.';
+    const splitCatatan = doc.splitTextToSize(catatanText, 170);
+    doc.text(splitCatatan, 20, yPos + 10);
+    
+    // Footer
+    yPos = yPos + splitCatatan.length * 5 + 30;
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`K-DPPP © ${new Date().getFullYear()}`, 20, yPos);
+    doc.text('Dikembangkan oleh: Ns. Sulatri, M.Kep., Sp. Jiwa', 20, yPos + 10);
+    doc.text('Poltekkes Kemenkes Tanjungkarang', 20, yPos + 20);
+    
+    // Save PDF
+    const fileName = `Hasil_K-DPPP_${biodataData.nama.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
+    doc.save(fileName);
+  };
+
+  const getCategoryColor = (category: string) => {
+    switch (category.toLowerCase()) {
+      case 'rendah': return 'text-green-600 border-green-600 bg-green-50';
+      case 'sedang': return 'text-yellow-600 border-yellow-600 bg-yellow-50';
+      case 'tinggi': return 'text-red-600 border-red-600 bg-red-50';
+      default: return 'text-gray-600 border-gray-600 bg-gray-50';
     }
   };
 
-  const handleShare = async () => {
-    if (!score) return;
-    
-    const shareText = `Hasil Kuesioner Distres Psikologis Pasien Paliatif (K-DPPP)\n\nSkor: ${score}/80\nKategori: ${category}\n\nRekomendasi: ${recommendation}`;
-    
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: 'Hasil K-DPPP',
-          text: shareText,
-        });
-      } catch (error) {
-        console.error('Error sharing:', error);
-      }
-    } else {
-      // Fallback for browsers that don't support Web Share API
-      try {
-        await navigator.clipboard.writeText(shareText);
-        toast({
-          title: 'Teks hasil disalin',
-          description: 'Hasil kuesioner telah disalin ke clipboard',
-        });
-      } catch (error) {
-        console.error('Error copying to clipboard:', error);
-      }
+  const getCategoryIcon = (category: string) => {
+    switch (category.toLowerCase()) {
+      case 'rendah': return <CheckCircle className="h-5 w-5" />;
+      case 'sedang': return <AlertCircle className="h-5 w-5" />;
+      case 'tinggi': return <XCircle className="h-5 w-5" />;
+      default: return <AlertCircle className="h-5 w-5" />;
     }
   };
 
-  if (score === null) {
+  if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <p>Memuat hasil...</p>
+      <div className="min-h-screen bg-background">
+        <SimpleHeader />
+        <main className="container px-4 py-8">
+          <div className="mx-auto max-w-2xl">
+            <Card>
+              <CardContent className="flex items-center justify-center py-12">
+                <div className="text-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+                  <p className="text-muted-foreground">Memuat hasil...</p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </main>
       </div>
     );
   }
 
-  // Calculate score percentage for the gauge
-  const scorePercentage = (score / 80) * 100;
-  
-  // Determine color based on score category
-  const getColorClass = () => {
-    if (score < 20) return 'text-green-500';
-    if (score < 40) return 'text-yellow-500';
-    if (score < 60) return 'text-orange-500';
-    return 'text-red-500';
-  };
+  if (score === null) return null;
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <Header title="Hasil Kuesioner" showBack backUrl="/" />
+    <div className="min-h-screen bg-background">
+      <SimpleHeader />
       
-      <main className="flex-1 container py-6">
-        <div className="mx-auto max-w-3xl">
+      <main className="container px-4 py-8">
+        <div className="mx-auto max-w-3xl space-y-6">
+          {/* Biodata Card */}
+          {biodataData && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Data Responden</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                  <div><strong>Nama:</strong> {biodataData.nama}</div>
+                  <div><strong>Umur:</strong> {biodataData.umur} tahun</div>
+                  <div><strong>Tanggal Lahir:</strong> {new Date(biodataData.tanggalLahir).toLocaleDateString('id-ID')}</div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Score Card */}
           <Card>
             <CardHeader className="text-center">
-              <CardTitle className="text-2xl">Hasil Penilaian</CardTitle>
+              <CardTitle className="text-2xl">Hasil Assessment K-DPPP</CardTitle>
               <CardDescription>
-                Kuesioner Distres Psikologis Pasien Paliatif (K-DPPP)
+                Berikut adalah hasil pengukuran distres psikologis Anda
               </CardDescription>
             </CardHeader>
-            
-            <CardContent className="space-y-6">
-              {/* Score Display */}
-              <div className="flex flex-col items-center justify-center py-6">
-                <div className="relative h-36 w-36 flex items-center justify-center">
-                  <svg className="h-full w-full" viewBox="0 0 100 100">
-                    {/* Background Circle */}
-                    <circle 
-                      cx="50" 
-                      cy="50" 
-                      r="45" 
-                      fill="none" 
-                      stroke="currentColor" 
-                      className="text-muted stroke-2"
-                    />
-                    
-                    {/* Score Circle */}
-                    <circle 
-                      cx="50" 
-                      cy="50" 
-                      r="45" 
-                      fill="none" 
-                      stroke="currentColor" 
-                      className={`${getColorClass()} stroke-2`}
-                      strokeDasharray="283"
-                      strokeDashoffset={283 - (283 * scorePercentage) / 100}
-                      transform="rotate(-90 50 50)"
-                    />
-                  </svg>
-                  <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className={`text-4xl font-bold ${getColorClass()}`}>{score}</span>
-                    <span className="text-sm text-muted-foreground">dari 80</span>
-                  </div>
-                </div>
-                
-                <h3 className={`text-xl font-bold mt-4 ${getColorClass()}`}>
-                  {category}
-                </h3>
+            <CardContent className="text-center space-y-6">
+              <div>
+                <div className="text-6xl font-bold text-primary mb-2">{score}</div>
+                <div className="text-lg text-muted-foreground">dari 80 poin</div>
               </div>
               
-              <Separator />
-              
-              {/* Recommendation */}
-              <div>
-                <h3 className="font-semibold text-lg mb-2">Rekomendasi:</h3>
-                <p className="text-muted-foreground">{recommendation}</p>
-              </div>
-              
-              <Separator />
-              
-              {/* Information */}
-              <div>
-                <h3 className="font-semibold text-lg mb-2">Informasi Tambahan:</h3>
-                <p className="text-sm text-muted-foreground">
-                  Hasil ini hanya bersifat skrining awal. Untuk penanganan lebih lanjut, 
-                  silakan konsultasikan dengan profesional kesehatan mental.
-                </p>
+              <div className="flex justify-center">
+                <Badge variant="outline" className={`px-4 py-2 text-lg font-semibold ${getCategoryColor(category)}`}>
+                  <span className="flex items-center gap-2">
+                    {getCategoryIcon(category)}
+                    Distres {category}
+                  </span>
+                </Badge>
               </div>
             </CardContent>
-            
-            <CardFooter className="flex flex-wrap gap-3 justify-center">
-              <Button variant="outline" onClick={handleReset}>
-                <RotateCcw className="h-4 w-4 mr-2" />
-                Mulai Ulang
-              </Button>
-              <Button variant="outline" onClick={handleShare}>
-                <Share2 className="h-4 w-4 mr-2" />
-                Bagikan
-              </Button>
-              <Button onClick={handleExportPdf}>
-                <FileText className="h-4 w-4 mr-2" />
-                Unduh PDF
-              </Button>
-            </CardFooter>
+          </Card>
+
+          {/* Interpretation Card */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-xl">Interpretasi Hasil</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Alert>
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription className="text-base leading-relaxed">
+                  {recommendation}
+                </AlertDescription>
+              </Alert>
+            </CardContent>
+          </Card>
+
+          {/* Action Buttons */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Langkah Selanjutnya</CardTitle>
+              <CardDescription>
+                Pilih tindakan yang ingin Anda lakukan dengan hasil ini
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex gap-3 justify-center flex-wrap">
+                <Button onClick={handleReset} variant="outline">
+                  <RotateCcw className="mr-2 h-4 w-4" />
+                  Ulangi Test
+                </Button>
+                <Button onClick={handleExportPDF} variant="outline">
+                  <FileDown className="mr-2 h-4 w-4" />
+                  Unduh PDF
+                </Button>
+                <Button asChild>
+                  <Link href="/">
+                    Kembali ke Beranda
+                  </Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Disclaimer */}
+          <Card className="border-amber-200 bg-amber-50">
+            <CardContent className="pt-6">
+              <div className="flex items-start gap-3">
+                <AlertCircle className="h-5 w-5 text-amber-600 mt-0.5" />
+                <div className="text-sm text-amber-800">
+                  <p className="font-semibold mb-1">Penting untuk diketahui:</p>
+                  <p>
+                    Hasil ini hanya sebagai indikator awal dan tidak dapat menggantikan diagnosis profesional. 
+                    Jika Anda merasa mengalami distres yang signifikan, disarankan untuk berkonsultasi 
+                    dengan profesional kesehatan mental.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
           </Card>
         </div>
       </main>

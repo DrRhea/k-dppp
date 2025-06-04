@@ -1,4 +1,3 @@
-// app/kuesioner/page.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -7,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { QuestionItem } from '@/components/question-item';
+import { BiodataForm } from '@/components/biodata-form';
 import { questions } from '@/lib/questions';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -25,16 +25,36 @@ function SimpleHeader() {
   );
 }
 
+interface BiodataFormData {
+  nama: string;
+  umur: string;
+  tanggalLahir: string;
+}
+
 export default function KuesionerPage() {
   const router = useRouter();
+  const [showBiodata, setShowBiodata] = useState(true);
+  const [biodataData, setBiodataData] = useState<BiodataFormData | null>(null);
   const [currentSection, setCurrentSection] = useState(0);
   const [answers, setAnswers] = useState<number[]>(Array(questions.length).fill(-1));
   const [progress, setProgress] = useState(0);
 
-  // Check if there are saved answers in localStorage
+  // Check if there are saved data in localStorage
   useEffect(() => {
     if (typeof window !== 'undefined') {
+      const savedBiodata = localStorage.getItem('k-dppp-biodata');
       const savedAnswers = localStorage.getItem('k-dppp-answers');
+      
+      if (savedBiodata) {
+        try {
+          const parsedBiodata = JSON.parse(savedBiodata);
+          setBiodataData(parsedBiodata);
+          setShowBiodata(false);
+        } catch (error) {
+          console.error('Error parsing saved biodata:', error);
+        }
+      }
+      
       if (savedAnswers) {
         try {
           const parsedAnswers = JSON.parse(savedAnswers);
@@ -62,6 +82,14 @@ export default function KuesionerPage() {
     const answered = answers.filter((a) => a !== -1).length;
     setProgress(Math.round((answered / questions.length) * 100));
   }, [answers]);
+
+  const handleBiodataSubmit = (data: BiodataFormData) => {
+    setBiodataData(data);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('k-dppp-biodata', JSON.stringify(data));
+    }
+    setShowBiodata(false);
+  };
 
   const handleAnswer = (questionIndex: number, value: number) => {
     const newAnswers = [...answers];
@@ -108,13 +136,20 @@ export default function KuesionerPage() {
   };
 
   const handleReset = () => {
-    if (typeof window !== 'undefined' && window.confirm('Apakah Anda yakin ingin mengulang kuesioner? Semua jawaban akan dihapus.')) {
+    if (typeof window !== 'undefined' && window.confirm('Apakah Anda yakin ingin mengulang kuesioner? Semua data akan dihapus.')) {
       setAnswers(Array(questions.length).fill(-1));
       setCurrentSection(0);
+      setBiodataData(null);
+      setShowBiodata(true);
       localStorage.removeItem('k-dppp-answers');
       localStorage.removeItem('k-dppp-score');
+      localStorage.removeItem('k-dppp-biodata');
       window.scrollTo(0, 0);
     }
+  };
+
+  const handleEditBiodata = () => {
+    setShowBiodata(true);
   };
 
   const getSectionQuestions = (section: number) => {
@@ -135,6 +170,22 @@ export default function KuesionerPage() {
     'Dimensi Gejala Fisik yang Mempengaruhi Psikologis',
   ];
 
+  // Show biodata form if not completed
+  if (showBiodata) {
+    return (
+      <div className="flex min-h-screen flex-col bg-background">
+        <SimpleHeader />
+        
+        <main className="flex-1 container py-6">
+          <BiodataForm 
+            onSubmit={handleBiodataSubmit}
+            initialData={biodataData || undefined}
+          />
+        </main>
+      </div>
+    );
+  }
+
   const currentQuestions = getSectionQuestions(currentSection);
 
   return (
@@ -143,6 +194,23 @@ export default function KuesionerPage() {
       
       <main className="flex-1 container py-6">
         <div className="mx-auto max-w-3xl">
+          {/* Biodata Summary */}
+          {biodataData && (
+            <Card className="mb-6 p-4">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h3 className="font-semibold text-sm text-muted-foreground mb-2">Data Responden:</h3>
+                  <p className="text-sm"><strong>Nama:</strong> {biodataData.nama}</p>
+                  <p className="text-sm"><strong>Umur:</strong> {biodataData.umur} tahun</p>
+                  <p className="text-sm"><strong>Tanggal Lahir:</strong> {new Date(biodataData.tanggalLahir).toLocaleDateString('id-ID')}</p>
+                </div>
+                <Button variant="outline" size="sm" onClick={handleEditBiodata}>
+                  Edit Data
+                </Button>
+              </div>
+            </Card>
+          )}
+
           <div className="mb-6">
             <div className="flex justify-between items-center mb-2">
               <span className="text-sm font-medium">
@@ -156,7 +224,7 @@ export default function KuesionerPage() {
           <Card className="p-6">
             <h1 className="text-xl font-bold mb-2">{sectionTitles[currentSection]}</h1>
             <p className="text-sm text-muted-foreground mb-6">
-              Bacalah setiap pernyataan berikut dengan saksama. Pilih angka yang paling sesuai dengan kondisi Anda selama 7 hari terakhir. Gunakan skala 1 sampai 4 untuk menilai setiap pernyataan.
+              Bacalah setiap pernyataan berikut dengan saksama. Pilih angka yang paling sesuai dengan kondisi Anda selama 7 hari terakhir. Gunakan skala 0 sampai 4 untuk menilai setiap pernyataan.
             </p>
 
             <div className="space-y-6">
