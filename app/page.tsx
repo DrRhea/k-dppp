@@ -1,36 +1,44 @@
-import Link from 'next/link';
-import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Trophy, FileQuestion, Info } from 'lucide-react';
+import { FileQuestion, Trophy, Info } from 'lucide-react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { PWAInstall } from '@/components/pwa-install';
 
 export default function Home() {
   return (
-    <div className="min-h-screen w-full bg-background">
+    <div className="flex min-h-screen flex-col bg-background">
       {/* Header */}
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="w-full">
-          <div className="container flex h-16 items-center justify-between">
-            <Link href="/" className="flex items-center gap-2">
-              <Image 
-                src="/logo.png" 
-                alt="Logo Kemenkes Poltekkes Tanjungkarang" 
-                width={40} 
-                height={40} 
-                className="h-8 w-auto"
-              />
-              <span className="text-lg font-bold text-primary">K-DPPP</span>
-            </Link>
-          </div>
+        <div className="container flex h-16 items-center">
+          <Link href="/" className="flex items-center gap-2">
+            <Image 
+              src="/logo.png" 
+              alt="Logo Kemenkes Poltekkes Tanjungkarang" 
+              width={40} 
+              height={40} 
+              className="h-8 w-auto"
+            />
+            <span className="text-lg font-bold text-primary">K-DPPP</span>
+          </Link>
         </div>
       </header>
       
       {/* Main Content */}
-      <main className="w-full">
+      <main className="flex-1">
         {/* Hero Section */}
-        <section className="w-full py-16 md:py-24">
+        <section className="w-full py-16 md:py-24 lg:py-32">
           <div className="container px-4">
-            <div className="mx-auto max-w-4xl text-center">
+            <div className="mx-auto max-w-3xl text-center">
+              <div className="mb-8 flex justify-center">
+                <Image 
+                  src="/logo.png" 
+                  alt="Logo Kemenkes Poltekkes Tanjungkarang" 
+                  width={120} 
+                  height={120} 
+                  className="h-20 w-auto md:h-24"
+                />
+              </div>
               <h1 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl lg:text-6xl">
                 <span className="text-primary">Kuesioner Distres Psikologis</span>
                 <br />
@@ -137,6 +145,9 @@ export default function Home() {
           </div>
         </div>
       </footer>
+
+      {/* PWA Install Prompt */}
+      <PWAInstall />
     </div>
   );
 }
