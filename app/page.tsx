@@ -40,9 +40,7 @@ export default function Home() {
                 />
               </div>
               <h1 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl lg:text-6xl">
-                <span className="text-primary">Kuesioner Distres Psikologis</span>
-                <br />
-                <span className="text-foreground">Pasien Paliatif</span>
+                <span className="text-primary">Skrining Kondisi Fisik, Psikologis, Sosial, dan Spiritual Pasien Paliatif</span>
               </h1>
               <p className="mt-6 text-lg text-muted-foreground md:text-xl">
                 Instrumen tervalidasi untuk mengukur tingkat distres psikologis pada pasien paliatif
